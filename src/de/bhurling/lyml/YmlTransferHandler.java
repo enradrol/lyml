@@ -14,6 +14,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.swing.TransferHandler;
 
+import org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
 public class YmlTransferHandler extends TransferHandler {
@@ -67,7 +68,7 @@ public class YmlTransferHandler extends TransferHandler {
 				String locale = basename(entry.getName());
 
 				String nextOutEntry = String.format("values-%s/strings.xml",
-						locale);
+						StringUtils.join(locale.split("-"), "-r"));
 				zos.putNextEntry(new ZipEntry(nextOutEntry));
 
 				parse(zipFile.getInputStream(entry), locale, zos);
@@ -105,15 +106,21 @@ public class YmlTransferHandler extends TransferHandler {
 			Object nextValue = map.get(nextKey);
 			if (nextValue instanceof HashMap) {
 				parse(nextPrefix, (HashMap<?, ?>) nextValue, zos);
-			} else {
+			} else if (nextValue != null) {
+				nextValue = fixValue(nextValue.toString());
+
 				String resourceLine = String.format(
-						"    <string name=\"%s\">%s</string>",
+						"    <string name=\"%s\">%s</string>\n",
 						nextPrefix.substring(1), nextValue);
-				resourceLine = resourceLine.replace("\n", "\\n");
+
 				zos.write(resourceLine.getBytes());
-				zos.write("\n".getBytes());
 			}
 		}
+	}
+
+	private String fixValue(String nextValue) {
+		// TODO replace occurences of %x$@ by %x$s
+		return nextValue.replace("\n", "\\n");
 	}
 
 }
