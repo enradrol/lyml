@@ -107,9 +107,11 @@ public class YmlTransferHandler extends TransferHandler {
 				parse(nextPrefix, (HashMap<?, ?>) nextValue, zos);
 			} else {
 				String resourceLine = String.format(
-						"    <string name=\"%s\">%s</string>\n",
-						prefix.substring(1), nextValue);
+						"    <string name=\"%s\">%s</string>",
+						nextPrefix.substring(1), nextValue);
+				resourceLine = resourceLine.replace("\n", "\\n");
 				zos.write(resourceLine.getBytes());
+				zos.write("\n".getBytes());
 			}
 		}
 	}
