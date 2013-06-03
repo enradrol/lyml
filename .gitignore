@@ -1,0 +1,7 @@
+# generated
+bin
+
+# eclipse stuff
+.classpath
+.settings
+.project
