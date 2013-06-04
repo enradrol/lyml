@@ -57,7 +57,7 @@ public class MainPanel extends JPanel implements ActionListener {
     
     private JPanel createArea() {
         JPanel panel = new JPanel(new BorderLayout());
-		panel.setPreferredSize(new Dimension(200, 800));
+		panel.setPreferredSize(new Dimension(300, 300));
         panel.setBorder(BorderFactory.createTitledBorder("Drop your Lymls here"));
 		panel.setTransferHandler(new YmlTransferHandler());
         return panel;
