@@ -15,4 +15,10 @@ public class ParserTest {
 		assertEquals("abc_test_test", YmlParser.fixXmlName(basename));
 	}
 
+	@Test
+	public void testFixValue() {
+		String value = "abc & 1";
+		assertEquals("abc &amp; 1", YmlParser.fixValue(value));
+	}
+
 }
