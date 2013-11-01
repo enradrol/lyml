@@ -100,7 +100,8 @@ public class YmlParser {
 
 	public static String fixValue(String nextValue) {
 		// TODO replace occurences of %x$@ by %x$s
-		return nextValue.replace("\n", "\\n").replace("&", "&amp;");
+		return nextValue.replace("\n", "\\n").replace("&", "&amp;")
+				.replace("...", "…");
 	}
 
 	public static String fixXmlName(String filename) {
