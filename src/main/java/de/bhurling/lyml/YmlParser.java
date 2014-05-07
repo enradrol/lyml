@@ -29,7 +29,7 @@ public class YmlParser {
 
     private Object mDefaultLocale;
 
-    public YmlParser(String[] keys) {
+    public YmlParser(String... keys) {
         mApiKeys = keys;
     }
 

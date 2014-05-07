@@ -9,4 +9,5 @@ dependencies {
     compile 'org.yaml:snakeyaml:1.13'
 
     testCompile 'junit:junit:4.11'
+    testCompile 'org.easytesting:fest-assert-core:2.0M10'
 }
