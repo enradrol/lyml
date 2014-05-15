@@ -49,7 +49,6 @@ public class ParserTest {
         value = "some string with a %2$@ placeholder";
         assertThat(mParser.fixValueForAndroid(value)).isEqualTo(
                 "some string with a %2$s placeholder");
-
     }
 
     @Test
@@ -75,6 +74,9 @@ public class ParserTest {
         value = "some text in \"quotes\" text";
         assertThat(mParser.fixValueForIOS(value)).isEqualTo(
                 "some text in \\\"quotes\\\" text");
+
+        value = "float %.2f placeholder";
+        assertThat(mParser.fixValueForIOS(value)).isEqualTo(value);
     }
 
     @Test
