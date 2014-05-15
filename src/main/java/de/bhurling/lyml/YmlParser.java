@@ -5,12 +5,10 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +21,7 @@ public class YmlParser {
     private static final String OPEN_RESOURCE_TAG = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n";
     private static final String CLOSE_RESOURCE_TAG = "</resources>\n";
 
-    public HashMap<String, HashMap<String, String>> mTranslations = new HashMap<String, HashMap<String, String>>();
+    public HashMap<String, HashMap<String, String>> mTranslations = new HashMap<>();
 
     private final String[] mApiKeys;
 
@@ -44,7 +42,7 @@ public class YmlParser {
             }
             HashMap<String, String> output = mTranslations.get(locale);
             if (output == null) {
-                output = new HashMap<String, String>();
+                output = new HashMap<>();
             }
             parseAndStore("", (HashMap<?, ?>) map.get(locale), output);
             mTranslations.put((String) locale, output);
@@ -76,7 +74,7 @@ public class YmlParser {
     public void createResources() throws IOException {
 
         // Fetch a list of (alphabetically sorted) keys from the default locale's set of translations
-        ArrayList<String> keys = new ArrayList<String>(mTranslations.get(mDefaultLocale.toString()).keySet());
+        ArrayList<String> keys = new ArrayList<>(mTranslations.get(mDefaultLocale.toString()).keySet());
         Collections.sort(keys);
 
         File outDir = new File("out");
@@ -263,8 +261,6 @@ public class YmlParser {
             }
 
             zos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -280,8 +276,6 @@ public class YmlParser {
                 return connection.getInputStream();
             }
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
