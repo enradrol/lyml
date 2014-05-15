@@ -42,6 +42,14 @@ public class ParserTest {
         assertThat(mParser.fixValueForAndroid(value)).isEqualTo(
                 "linebreak \\n linebreak \\n linebreak");
 
+        value = "some string with a %@ placeholder";
+        assertThat(mParser.fixValueForAndroid(value)).isEqualTo(
+                "some string with a %s placeholder");
+
+        value = "some string with a %2$@ placeholder";
+        assertThat(mParser.fixValueForAndroid(value)).isEqualTo(
+                "some string with a %2$s placeholder");
+
     }
 
     @Test

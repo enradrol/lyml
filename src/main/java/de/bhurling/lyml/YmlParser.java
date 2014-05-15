@@ -212,7 +212,9 @@ public class YmlParser {
                 .replace("...", "…")
                 .replace("<", "&lt;")
                 .replace(">", "&gt;")
-                .replace("'", "\\'");
+                .replace("'", "\\'")
+                .replace("%@", "%s")
+                .replaceAll("%(\\d+\\$)@", "%$1s");
     }
 
     public String fixValueForIOS(String value) {
