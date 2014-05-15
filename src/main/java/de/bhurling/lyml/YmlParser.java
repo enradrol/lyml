@@ -164,7 +164,7 @@ public class YmlParser {
         }
 
         // Create constant mapping
-        zos.putNextEntry(new ZipEntry("VWGUIStringsDefinition.h"));
+        zos.putNextEntry(new ZipEntry("StringDefinitions.h"));
 
         for (String key : keys) {
             zos.write(createIosDefinition(key).getBytes("UTF-8"));
