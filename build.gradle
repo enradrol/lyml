@@ -14,7 +14,15 @@ dependencies {
 }
 
 jar {
+    System.setProperty("file.encoding", "UTF-8")
+    compileJava.options.encoding = 'utf-8'
+
     manifest {
         attributes("Main-Class": "de.bhurling.lyml.Main")
+    }
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
     }
 }
