@@ -84,9 +84,6 @@ public class YmlParser {
 
         System.out.println("Creating Android resources.");
 
-        // create the base path for our build flavor (e.g. "china/res")
-        String baseOutPath = "src/main/res";
-
         for (String locale : mTranslations.keySet()) {
 
             String[] splittedLocale = locale.split("-");
@@ -103,7 +100,7 @@ public class YmlParser {
                     appendix += "-r" + regionalCode.toUpperCase();
                 }
             }
-            String outPath = String.format("%s/values%s", baseOutPath, appendix);
+            String outPath = String.format("values%s", appendix);
 
             // append the filename (based on ZIPs filename)
             String nextOutEntry = String.format("%s/strings.xml", outPath);
