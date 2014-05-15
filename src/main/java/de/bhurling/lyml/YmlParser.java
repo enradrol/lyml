@@ -65,11 +65,10 @@ public class YmlParser {
             if (nextValue instanceof HashMap) {
                 parseAndStore(nextPrefix, (HashMap<?, ?>) nextValue, output);
             } else if (!StringUtils.isEmpty((String) nextValue)) {
-                if (output.containsKey(nextPrefix)) {
-                    throw new IllegalStateException("Key " + nextPrefix
-                            + " already exists!");
+                // Keep existing translations
+                if (!output.containsKey(nextPrefix)) {
+                    output.put(nextPrefix, (String) nextValue);
                 }
-                output.put(nextPrefix, (String) nextValue);
             }
         }
     }
