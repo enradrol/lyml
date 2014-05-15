@@ -103,10 +103,10 @@ public class ParserTest {
 
     @Test
     public void testParseAndStoreRecursive() {
-        HashMap<Object, Object> input = new HashMap<Object, Object>();
+        HashMap<Object, Object> input = new HashMap<>();
         input.put("key", "value");
 
-        HashMap<String, String> output = new HashMap<String, String>();
+        HashMap<String, String> output = new HashMap<>();
         mParser.parseAndStore("", input, output);
         assertThat(output.get("key")).isEqualTo("value");
         output.clear();
@@ -115,7 +115,7 @@ public class ParserTest {
         assertThat(output.get("prefix.key")).isEqualTo("value");
         output.clear();
 
-        HashMap<Object, Object> innerHashMap = new HashMap<Object, Object>();
+        HashMap<Object, Object> innerHashMap = new HashMap<>();
         innerHashMap.put("inner_key", "value");
         input.put("key", innerHashMap);
         mParser.parseAndStore("prefix", input, output);
@@ -127,18 +127,20 @@ public class ParserTest {
         assertThat(output.size()).isEqualTo(2);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testDuplicateEntries() {
-        HashMap<Object, Object> input = new HashMap<Object, Object>();
+        HashMap<Object, Object> input = new HashMap<>();
         input.put("key", "value");
 
-        HashMap<String, String> output = new HashMap<String, String>();
+        HashMap<String, String> output = new HashMap<>();
         mParser.parseAndStore("", input, output);
 
-        input = new HashMap<Object, Object>();
+        input = new HashMap<>();
         input.put("key", "another Value");
 
         mParser.parseAndStore("", input, output);
+
+        assertThat(output.get("key")).isEqualTo("value");
     }
 
     @Test
