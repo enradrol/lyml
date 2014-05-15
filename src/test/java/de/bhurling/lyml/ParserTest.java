@@ -143,7 +143,7 @@ public class ParserTest {
     public void testCreateIOSResourceString() {
         String resource = mParser.createLocalizableString("ios.key",
                 "some value");
-        assertThat(resource).isEqualTo("\"ios.key\"=\"some value\";\n");
+        assertThat(resource).isEqualTo("\"ios_key\"=\"some value\";\n");
     }
 
     @Test

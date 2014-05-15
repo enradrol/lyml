@@ -181,7 +181,7 @@ public class YmlParser {
     }
 
     public String createLocalizableString(String key, String value) {
-        return String.format("\"%s\"=\"%s\";\n", key, fixValueForIOS(value));
+        return String.format("\"%s\"=\"%s\";\n", key.replace(".", "_"), fixValueForIOS(value));
     }
 
     public String createIosDefinition(String key) {
