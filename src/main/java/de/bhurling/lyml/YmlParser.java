@@ -127,8 +127,6 @@ public class YmlParser {
             zos.write(CLOSE_RESOURCE_TAG.getBytes("UTF-8"));
         }
 
-        zos.write(CLOSE_RESOURCE_TAG.getBytes("UTF-8"));
-
         zos.close();
 
         zos = new ZipOutputStream(new FileOutputStream("out/strings-ios.zip"));
