@@ -14,18 +14,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class YmlParser {
-    private static final String OPEN_RESOURCE_TAG = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n";
-    private static final String CLOSE_RESOURCE_TAG = "</resources>\n";
-
     public HashMap<String, HashMap<String, String>> mTranslations = new HashMap<>();
 
     private final String[] mApiKeys;
 
     private Object mDefaultLocale;
+
+    private File mOutputDirectory;
 
     public YmlParser(String... keys) {
         mApiKeys = keys;
@@ -77,9 +78,15 @@ public class YmlParser {
         ArrayList<String> keys = new ArrayList<>(mTranslations.get(mDefaultLocale.toString()).keySet());
         Collections.sort(keys);
 
-        File outDir = new File("out");
-        outDir.mkdirs();
+        createAndroidResources(keys);
+        createIosResources(keys);
+        createWinPhoneResources(keys);
 
+        System.out.println("\nDone. Have a look into\n\n" + mOutputDirectory.getAbsolutePath()
+                + "\n\nto find your files. Have a nice day!\n\n");
+    }
+
+    private void createAndroidResources(ArrayList<String> keys) throws IOException {
         ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("out/strings-android.zip"));
 
         System.out.println("Creating Android resources.");
@@ -106,7 +113,7 @@ public class YmlParser {
             String nextOutEntry = String.format("%s/strings.xml", outPath);
             zos.putNextEntry(new ZipEntry(nextOutEntry));
 
-            zos.write(OPEN_RESOURCE_TAG.getBytes("UTF-8"));
+            zos.write(AndroidResource.OPEN.getBytes("UTF-8"));
 
             for (String key : keys) {
                 // find a value in the regional translations
@@ -118,12 +125,14 @@ public class YmlParser {
                 }
             }
 
-            zos.write(CLOSE_RESOURCE_TAG.getBytes("UTF-8"));
+            zos.write(AndroidResource.CLOSE.getBytes("UTF-8"));
         }
 
         zos.close();
+    }
 
-        zos = new ZipOutputStream(new FileOutputStream("out/strings-ios.zip"));
+    private void createIosResources(ArrayList<String> keys) throws IOException {
+        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("out/strings-ios.zip"));
 
         System.out.println("Creating iOS resources.");
 
@@ -163,9 +172,41 @@ public class YmlParser {
         }
 
         zos.close();
+    }
 
-        System.out.println("\nDone. Have a look into\n\n" + outDir.getAbsolutePath()
-                + "\n\nto find your files. Have a nice day!\n\n");
+    private void createWinPhoneResources(ArrayList<String> keys) throws IOException {
+        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("out/strings-win.zip"));
+
+        System.out.println("Creating Windows Phone resources.");
+
+        for (String locale : mTranslations.keySet()) {
+            String nextOutEntry = String.format("Strings/%s/Resources.resw", locale);
+            zos.putNextEntry(new ZipEntry(nextOutEntry));
+            zos.write(WinPhoneResource.OPEN.getBytes("UTF-8"));
+
+            for (String key : keys) {
+
+                String value = getValue(key, locale);
+
+                if (!StringUtils.isEmpty(value)) {
+                    zos.write(createWinPhoneResource(key, value).getBytes("UTF-8"));
+                }
+            }
+
+            zos.write(WinPhoneResource.CLOSE.getBytes("UTF-8"));
+        }
+
+        zos.close();
+    }
+
+    public String createWinPhoneResource(String key, String value) {
+        String resourceLine = String.format(
+                "\t<data name=\"%s\">\n" +
+                        "\t\t<value>%s</value>\n" +
+                        "\t</data>\n",
+                key.replace(".", "_"), fixValueForWinPhone(value));
+
+        return resourceLine;
     }
 
     public String fixLocaleForIOS(String locale) {
@@ -217,6 +258,23 @@ public class YmlParser {
         return fixed;
     }
 
+    public String fixValueForWinPhone(String value) {
+        String fixed = value
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("%s", "{0}");
+
+        Pattern pattern = Pattern.compile("%((\\d+)\\$)s");
+        Matcher matcher = pattern.matcher(fixed);
+        while (matcher.find()) {
+            int placeholderInt = Integer.parseInt(matcher.group(2)) - 1;
+            fixed = fixed.replace(matcher.group(), "{" + placeholderInt + "}");
+        }
+
+        return fixed;
+    }
+
     public String camelCase(String string) {
         return StringUtils.join(("k" + WordUtils.capitalizeFully(string
                 .replace(".", " ").replace("_", " "))).split(" "), "");
@@ -224,11 +282,11 @@ public class YmlParser {
 
     public void fetchFromLocaleApp() {
         try {
-            File outputDirectory = new File("out");
-            outputDirectory.mkdirs();
+            mOutputDirectory = new File("out");
+            mOutputDirectory.mkdirs();
 
             ZipOutputStream zos = new ZipOutputStream(
-                    new FileOutputStream(new File(outputDirectory, "original-yml.zip")));
+                    new FileOutputStream(new File(mOutputDirectory, "original-yml.zip")));
 
             for (String apiKey : mApiKeys) {
                 System.out.println("Fetching translations for project " + apiKey);
