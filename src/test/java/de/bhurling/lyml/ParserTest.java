@@ -80,6 +80,27 @@ public class ParserTest {
     }
 
     @Test
+    public void testFixValueForWinPhone() {
+        String value = "some string %s";
+        assertThat(mParser.fixValueForWinPhone(value)).isEqualTo("some string {0}");
+
+        value = "some some %1$s";
+        assertThat(mParser.fixValueForWinPhone(value)).isEqualTo("some some {0}");
+
+        value = "some some %1$s and more %2$s la";
+        assertThat(mParser.fixValueForWinPhone(value)).isEqualTo(
+                "some some {0} and more {1} la");
+
+        value = "some some %2$s & %1$s la";
+        assertThat(mParser.fixValueForWinPhone(value)).isEqualTo(
+                "some some {1} &amp; {0} la");
+
+        value = "smaller than < and greater than >";
+        assertThat(mParser.fixValueForWinPhone(value)).isEqualTo(
+                "smaller than &lt; and greater than &gt;");
+    }
+
+    @Test
     public void testParseAndStore() {
         String yml = "{\"en\":{\"outer\":{\"inner\":\"english\"}}}";
         mParser.parseAndStore(new ByteArrayInputStream(yml.getBytes()));
@@ -156,6 +177,17 @@ public class ParserTest {
         String resource = mParser.createLocalizableString("ios.key",
                 "some value");
         assertThat(resource).isEqualTo("\"ios_key\"=\"some value\";\n");
+    }
+
+    @Test
+    public void testCreateWinPhoneResourceString() {
+        String resource = mParser.createWinPhoneResource("winphone.key",
+                "some value");
+        assertThat(resource).isEqualTo(
+                "\t<data name=\"winphone_key\">\n" +
+                "\t\t<value>some value</value>\n" +
+                "\t</data>\n"
+        );
     }
 
     @Test
