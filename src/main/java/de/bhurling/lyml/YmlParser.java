@@ -214,11 +214,11 @@ public class YmlParser {
     }
 
     public String createLocalizableString(String key, String value) {
-        return String.format("\"%s\"=\"%s\";\n", key.replace(".", "_"), fixValueForIOS(value));
+        return String.format("\"%s\"=\"%s\";\n", fixKeyForIOS(key), fixValueForIOS(value));
     }
 
     public String createIosDefinition(String key) {
-        return String.format("#define %s @\"%s\"\n", camelCase(key), key);
+        return String.format("#define %s @\"%s\"\n", camelCase(key), fixKeyForIOS(key));
     }
 
     public String createAndroidResource(String key, String value) {
@@ -248,6 +248,10 @@ public class YmlParser {
                 .replace("'", "\\'")
                 .replace("%@", "%s")
                 .replaceAll("%(\\d+\\$)@", "%$1s");
+    }
+
+    public String fixKeyForIOS(String key) {
+        return key.replace(".", "_");
     }
 
     public String fixValueForIOS(String value) {

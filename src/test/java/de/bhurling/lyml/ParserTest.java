@@ -203,7 +203,7 @@ public class ParserTest {
     public void testCreateIosDefinition() {
         String key = "ios.key.with_more";
         assertThat(mParser.createIosDefinition(key)).isEqualTo(
-                "#define kIosKeyWithMore @\"ios.key.with_more\"\n");
+                "#define kIosKeyWithMore @\"ios_key_with_more\"\n");
     }
 
 }
