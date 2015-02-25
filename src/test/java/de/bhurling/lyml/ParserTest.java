@@ -165,6 +165,13 @@ public class ParserTest {
     }
 
     @Test
+    public void testCreateJavaResourceString() {
+        String resource = mParser.createJavaResource("java-key",
+                "some value");
+        assertThat(resource).isEqualTo("java-key=some value");
+    }
+
+    @Test
     public void testCreateAndroidResourceString() {
         String resource = mParser.createAndroidResource("android.key",
                 "value <>");
