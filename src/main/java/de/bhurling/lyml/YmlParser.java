@@ -100,7 +100,6 @@ public class YmlParser {
             String languageCode = splittedLocale[0];
             String regionalCode = splittedLocale.length == 2 ? splittedLocale[1] : null;
 
-            // append xx-XX (but leave out xx if this is the default locale)
             if (!mDefaultLocale.equals(locale)) {
 
                 if (regionalCode != null) {
