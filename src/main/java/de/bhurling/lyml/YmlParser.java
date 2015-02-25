@@ -272,7 +272,7 @@ public class YmlParser {
     }
 
     public String createJavaResource(String key, String value) {
-        return String.format("%s = %s\n", key, value);
+        return String.format("%s=%s\n", key, value);
     }
 
     private String getValue(String key, String languageCode) {

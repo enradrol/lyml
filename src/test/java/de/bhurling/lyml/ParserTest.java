@@ -168,7 +168,7 @@ public class ParserTest {
     public void testCreateJavaResourceString() {
         String resource = mParser.createJavaResource("java-key",
                 "some value");
-        assertThat(resource).isEqualTo("java-key=some value");
+        assertThat(resource).isEqualTo("java-key=some value\n");
     }
 
     @Test
