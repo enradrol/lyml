@@ -81,9 +81,50 @@ public class YmlParser {
         createAndroidResources(keys);
         createIosResources(keys);
         createWinPhoneResources(keys);
+        createJavaResources(keys);
 
         System.out.println("\nDone. Have a look into\n\n" + mOutputDirectory.getAbsolutePath()
                 + "\n\nto find your files. Have a nice day!\n\n");
+    }
+
+
+    private void createJavaResources(ArrayList<String> keys) throws IOException {
+        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("out/strings-java.zip"));
+
+        System.out.println("Creating Java resources.");
+
+        for (String locale : mTranslations.keySet()) {
+
+            String[] splittedLocale = locale.split("-");
+
+            String languageCode = splittedLocale[0];
+            String regionalCode = splittedLocale.length == 2 ? splittedLocale[1] : null;
+
+            if (!mDefaultLocale.equals(locale)) {
+
+                if (regionalCode != null) {
+                    languageCode += "-" + regionalCode.toUpperCase();
+                }
+            }
+            String outPath = String.format("%s", languageCode);
+
+            // append the filename (based on ZIPs filename)
+            String nextOutEntry = String.format("%s/language.properties", outPath);
+            zos.putNextEntry(new ZipEntry(nextOutEntry));
+
+            for (String key : keys) {
+                // find a value in the regional translations
+                String value = getValue(key, locale);
+
+                // create an android resource string and write to the output zip
+                if (!StringUtils.isEmpty(value)) {
+                    zos.write(createJavaResource(key, value).getBytes("UTF-8"));
+                }
+            }
+        }
+
+        zos.close();
+
     }
 
     private void createAndroidResources(ArrayList<String> keys) throws IOException {
@@ -227,6 +268,10 @@ public class YmlParser {
                 key.replace(".", "_"), fixValueForAndroid(value));
 
         return resourceLine;
+    }
+
+    public String createJavaResource(String key, String value) {
+        return String.format("%s=%s\n", key, value);
     }
 
     private String getValue(String key, String languageCode) {
