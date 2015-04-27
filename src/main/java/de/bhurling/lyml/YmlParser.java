@@ -1,5 +1,8 @@
 package de.bhurling.lyml;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.yaml.snakeyaml.Yaml;
@@ -8,8 +11,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -340,7 +341,7 @@ public class YmlParser {
             for (String apiKey : mApiKeys) {
                 System.out.println("Fetching translations for project " + apiKey);
                 String url = String.format(
-                        "http://api.localeapp.com/v1/projects/%s/translations/all.yml", apiKey);
+                        "https://api.localeapp.com/v1/projects/%s/translations/all.yml", apiKey);
                 InputStream is = fetchTranslations(url);
 
                 if (is != null) {
@@ -371,15 +372,17 @@ public class YmlParser {
     }
 
     private InputStream fetchTranslations(String url) {
-        URL u;
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
         try {
-            u = new URL(url);
-            HttpURLConnection connection = (HttpURLConnection) u.openConnection();
-
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                return connection.getInputStream();
+            Response response = client.newCall(request).execute();
+            if (response.isSuccessful()) {
+                return response.body().byteStream();
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
