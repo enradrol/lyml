@@ -189,10 +189,11 @@ public class ParserTest {
     @Test
     public void testCreateWinPhoneResourceString() {
         String resource = mParser.createWinPhoneResource("winphone.key",
-                "some value");
+                "some\\nvalue");
         assertThat(resource).isEqualTo(
                 "\t<data name=\"winphone_key\">\n" +
-                "\t\t<value>some value</value>\n" +
+                "\t\t<value>some\n" +
+                "value</value>\n" +
                 "\t</data>\n"
         );
     }

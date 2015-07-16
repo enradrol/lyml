@@ -310,6 +310,7 @@ public class YmlParser {
 
     public String fixValueForWinPhone(String value) {
         String fixed = value
+                .replace("\\n", "\n")
                 .replace("&", "&amp;")
                 .replace("<", "&lt;")
                 .replace(">", "&gt;")
