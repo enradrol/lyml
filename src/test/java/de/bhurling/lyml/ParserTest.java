@@ -50,6 +50,10 @@ public class ParserTest {
         assertThat(mParser.fixValueForAndroid(value)).isEqualTo(
                 "some string with a %2$s placeholder");
 
+        value = "some string with a %2$s placeholder";
+        assertThat(mParser.fixValueForAndroid(value)).isEqualTo(
+                "some string with a %2$s placeholder");
+
         value = "some string with percent sign 19%";
         assertThat(mParser.fixValueForAndroid(value)).isEqualTo(
                 "some string with percent sign 19%%");
@@ -57,6 +61,9 @@ public class ParserTest {
         value = "some string with percent sign 19% and placeholder %s";
         assertThat(mParser.fixValueForAndroid(value)).isEqualTo(
                 "some string with percent sign 19%% and placeholder %s");
+
+        value = "some string with integer %d placeholder and floating %.2f placeholder";
+        assertThat(mParser.fixValueForAndroid(value)).isEqualTo(value);
     }
 
     @Test
