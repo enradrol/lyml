@@ -292,8 +292,10 @@ public class YmlParser {
                 .replace("<", "&lt;")
                 .replace(">", "&gt;")
                 .replace("'", "\\'")
-                .replace("%@", "%s")
-                .replaceAll("%(\\d+\\$)@", "%$1s");
+                .replace("%", "%%")
+                .replace("%%s", "%s")
+                .replace("%%@", "%s")
+                .replaceAll("%%(\\d+\\$)@", "%$1s");
     }
 
     public String fixKeyForIOS(String key) {
