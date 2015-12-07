@@ -14,14 +14,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class YmlParser {
-    public HashMap<String, HashMap<String, String>> mTranslations = new HashMap<>();
+    public Map<String, Map<String, String>> mTranslations = new HashMap<>();
 
     private final String[] mApiKeys;
 
@@ -36,34 +36,33 @@ public class YmlParser {
     public void parseAndStore(InputStream is) {
         Yaml yaml = new Yaml();
 
-        HashMap<?, ?> map = (HashMap<?, ?>) yaml.load(is);
+        Map<?, ?> map = (Map<?, ?>) yaml.load(is);
 
-        for (Object locale : map.keySet()) {
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            String locale = entry.getKey().toString();
             if (mDefaultLocale == null) {
                 mDefaultLocale = locale;
             }
-            HashMap<String, String> output = mTranslations.get(locale);
+            Map<String, String> output = mTranslations.get(locale);
             if (output == null) {
                 output = new HashMap<>();
             }
-            parseAndStore("", (HashMap<?, ?>) map.get(locale), output);
-            mTranslations.put((String) locale, output);
+            parseAndStore("", (Map<?, ?>) entry.getValue(), output);
+            mTranslations.put(locale, output);
         }
     }
 
-    public void parseAndStore(String prefix, HashMap<?, ?> map, HashMap<String, String> output) {
+    public void parseAndStore(String prefix, Map<?, ?> map, Map<String, String> output) {
         if (map == null || map.isEmpty())
             return;
 
-        Iterator<?> iter = map.keySet().iterator();
-
-        while (iter.hasNext()) {
-            String nextKey = iter.next().toString();
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            String nextKey = entry.getKey().toString();
             String nextPrefix = StringUtils.isEmpty(prefix) ?
-                    nextKey : String.format("%s.%s", prefix, nextKey.toString());
-            Object nextValue = map.get(nextKey);
-            if (nextValue instanceof HashMap) {
-                parseAndStore(nextPrefix, (HashMap<?, ?>) nextValue, output);
+                    nextKey : String.format("%s.%s", prefix, nextKey);
+            Object nextValue = entry.getValue();
+            if (nextValue instanceof Map) {
+                parseAndStore(nextPrefix, (Map<?, ?>) nextValue, output);
             } else if (!StringUtils.isEmpty((String) nextValue)) {
                 // Keep existing translations
                 if (!output.containsKey(nextPrefix)) {
@@ -242,13 +241,12 @@ public class YmlParser {
     }
 
     public String createWinPhoneResource(String key, String value) {
-        String resourceLine = String.format(
-                "\t<data name=\"%s\">\n" +
+        return String.format("" +
+                        "\t<data name=\"%s\">\n" +
                         "\t\t<value>%s</value>\n" +
                         "\t</data>\n",
-                key.replace(".", "_"), fixValueForWinPhone(value));
-
-        return resourceLine;
+                key.replace(".", "_"),
+                fixValueForWinPhone(value));
     }
 
     public String fixLocaleForIOS(String locale) {
@@ -256,19 +254,21 @@ public class YmlParser {
     }
 
     public String createLocalizableString(String key, String value) {
-        return String.format("\"%s\"=\"%s\";\n", fixKeyForIOS(key), fixValueForIOS(value));
+        return String.format("\"%s\"=\"%s\";\n",
+                fixKeyForIOS(key),
+                fixValueForIOS(value));
     }
 
     public String createIosDefinition(String key) {
-        return String.format("#define %s @\"%s\"\n", camelCase(key), fixKeyForIOS(key));
+        return String.format("#define %s @\"%s\"\n",
+                camelCase(key),
+                fixKeyForIOS(key));
     }
 
     public String createAndroidResource(String key, String value) {
-        String resourceLine = String.format(
-                "    <string name=\"%s\">%s</string>\n",
-                key.replace(".", "_"), fixValueForAndroid(value));
-
-        return resourceLine;
+        return String.format("    <string name=\"%s\">%s</string>\n",
+                key.replace(".", "_"),
+                fixValueForAndroid(value));
     }
 
     public String createJavaResource(String key, String value) {
@@ -276,7 +276,7 @@ public class YmlParser {
     }
 
     private String getValue(String key, String languageCode) {
-        HashMap<String, String> map = mTranslations.get(languageCode);
+        Map<String, String> map = mTranslations.get(languageCode);
         if (map == null) {
             return null;
         }
