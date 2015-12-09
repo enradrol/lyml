@@ -1,12 +1,11 @@
 package de.bhurling.lyml;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ParserTest {
 
@@ -84,7 +83,6 @@ public class ParserTest {
         value = "some some %1$s and more %2$s la";
         assertThat(mParser.fixValueForIOS(value)).isEqualTo(
                 "some some %1$@ and more %2$@ la");
-        assertEquals("some some %1$@ and more %2$@ la", mParser.fixValueForIOS(value));
 
         value = "some text in \"quotes\" text";
         assertThat(mParser.fixValueForIOS(value)).isEqualTo(
@@ -205,7 +203,7 @@ public class ParserTest {
     public void testCreateWinPhoneResourceString() {
         String resource = mParser.createWinPhoneResource("winphone.key",
                 "some\\nvalue");
-        assertThat(resource).isEqualTo(
+        assertThat(resource).isEqualTo("" +
                 "\t<data name=\"winphone_key\">\n" +
                 "\t\t<value>some\n" +
                 "value</value>\n" +
