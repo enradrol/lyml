@@ -221,10 +221,16 @@ public class ParserTest {
     }
 
     @Test
-    public void testCreateIosDefinition() {
+    public void testCreateIosObjCDefinition() {
         String key = "ios.key.with_more";
         assertThat(mParser.createIosObjCDefinition(key)).isEqualTo(
                 "#define kIosKeyWithMore @\"ios_key_with_more\"\n");
     }
 
+    @Test
+    public void testCreateIosSwiftDefinition() {
+        String key = "ios.key.with_more";
+        assertThat(mParser.createIosSwiftDefinition(key)).isEqualTo(
+                "static let iosKeyWithMore = \"ios_key_with_more\"\n");
+    }
 }
