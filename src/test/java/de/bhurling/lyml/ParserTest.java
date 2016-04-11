@@ -214,16 +214,16 @@ public class ParserTest {
     @Test
     public void testCamelCase() {
         String key = mParser.camelCase("ios.key");
-        assertThat(key).isEqualTo("kIosKey");
+        assertThat(key).isEqualTo("IosKey");
 
         key = mParser.camelCase("ios.key.with_more");
-        assertThat(key).isEqualTo("kIosKeyWithMore");
+        assertThat(key).isEqualTo("IosKeyWithMore");
     }
 
     @Test
     public void testCreateIosDefinition() {
         String key = "ios.key.with_more";
-        assertThat(mParser.createIosDefinition(key)).isEqualTo(
+        assertThat(mParser.createIosObjCDefinition(key)).isEqualTo(
                 "#define kIosKeyWithMore @\"ios_key_with_more\"\n");
     }
 

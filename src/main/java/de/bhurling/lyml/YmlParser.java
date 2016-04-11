@@ -206,11 +206,21 @@ public class YmlParser {
         }
 
         // Create constant mapping
+        // OBJ-C
         zos.putNextEntry(new ZipEntry("StringDefinitions.h"));
 
         for (String key : keys) {
-            zos.write(createIosDefinition(key).getBytes("UTF-8"));
+            zos.write(createIosObjCDefinition(key).getBytes("UTF-8"));
         }
+
+        // Swift
+        zos.putNextEntry(new ZipEntry("StringDefinitions.swift"));
+
+        zos.write("struct L {\n".getBytes("UTF-8"));
+        for (String key : keys) {
+            zos.write(("    " + createIosSwiftDefinition(key)).getBytes("UTF-8"));
+        }
+        zos.write("}".getBytes("UTF-8"));
 
         zos.close();
     }
@@ -259,9 +269,15 @@ public class YmlParser {
                 fixValueForIOS(value));
     }
 
-    public String createIosDefinition(String key) {
-        return String.format("#define %s @\"%s\"\n",
+    public String createIosObjCDefinition(String key) {
+        return String.format("#define k%s @\"%s\"\n",
                 camelCase(key),
+                fixKeyForIOS(key));
+    }
+
+    public String createIosSwiftDefinition(String key) {
+        return String.format("static let %s = \"%s\"\n",
+                StringUtils.uncapitalize(camelCase(key)),
                 fixKeyForIOS(key));
     }
 
@@ -327,7 +343,7 @@ public class YmlParser {
     }
 
     public String camelCase(String string) {
-        return StringUtils.join(("k" + WordUtils.capitalizeFully(string
+        return StringUtils.join((WordUtils.capitalizeFully(string
                 .replace(".", " ").replace("_", " "))).split(" "), "");
     }
 
