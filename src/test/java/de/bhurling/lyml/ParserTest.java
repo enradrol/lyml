@@ -1,12 +1,11 @@
 package de.bhurling.lyml;
 
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ParserTest {
 
@@ -49,6 +48,21 @@ public class ParserTest {
         value = "some string with a %2$@ placeholder";
         assertThat(mParser.fixValueForAndroid(value)).isEqualTo(
                 "some string with a %2$s placeholder");
+
+        value = "some string with a %2$s placeholder";
+        assertThat(mParser.fixValueForAndroid(value)).isEqualTo(
+                "some string with a %2$s placeholder");
+
+        value = "some string with percent sign 19%";
+        assertThat(mParser.fixValueForAndroid(value)).isEqualTo(
+                "some string with percent sign 19%%");
+
+        value = "some string with percent sign 19% and placeholder %s";
+        assertThat(mParser.fixValueForAndroid(value)).isEqualTo(
+                "some string with percent sign 19%% and placeholder %s");
+
+        value = "some string with integer %d placeholder and floating %.2f placeholder";
+        assertThat(mParser.fixValueForAndroid(value)).isEqualTo(value);
     }
 
     @Test
@@ -69,7 +83,6 @@ public class ParserTest {
         value = "some some %1$s and more %2$s la";
         assertThat(mParser.fixValueForIOS(value)).isEqualTo(
                 "some some %1$@ and more %2$@ la");
-        assertEquals("some some %1$@ and more %2$@ la", mParser.fixValueForIOS(value));
 
         value = "some text in \"quotes\" text";
         assertThat(mParser.fixValueForIOS(value)).isEqualTo(
@@ -189,10 +202,11 @@ public class ParserTest {
     @Test
     public void testCreateWinPhoneResourceString() {
         String resource = mParser.createWinPhoneResource("winphone.key",
-                "some value");
-        assertThat(resource).isEqualTo(
+                "some\\nvalue");
+        assertThat(resource).isEqualTo("" +
                 "\t<data name=\"winphone_key\">\n" +
-                "\t\t<value>some value</value>\n" +
+                "\t\t<value>some\n" +
+                "value</value>\n" +
                 "\t</data>\n"
         );
     }
@@ -200,17 +214,23 @@ public class ParserTest {
     @Test
     public void testCamelCase() {
         String key = mParser.camelCase("ios.key");
-        assertThat(key).isEqualTo("kIosKey");
+        assertThat(key).isEqualTo("IosKey");
 
         key = mParser.camelCase("ios.key.with_more");
-        assertThat(key).isEqualTo("kIosKeyWithMore");
+        assertThat(key).isEqualTo("IosKeyWithMore");
     }
 
     @Test
-    public void testCreateIosDefinition() {
+    public void testCreateIosObjCDefinition() {
         String key = "ios.key.with_more";
-        assertThat(mParser.createIosDefinition(key)).isEqualTo(
+        assertThat(mParser.createIosObjCDefinition(key)).isEqualTo(
                 "#define kIosKeyWithMore @\"ios_key_with_more\"\n");
     }
 
+    @Test
+    public void testCreateIosSwiftDefinition() {
+        String key = "ios.key.with_more";
+        assertThat(mParser.createIosSwiftDefinition(key)).isEqualTo(
+                "static let iosKeyWithMore = \"ios_key_with_more\"\n");
+    }
 }
